@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# check_mqtt 1.0
+# MIT Licensed, Copyright 2018, 2019 Sebastian Raff <hobbyquaker@gmail.com> (https://github.com/hobbyquaker)
+
+PARAMS=$*
+
+TS=`date +%s`
+
+mosquitto_pub $PARAMS -m '' &>/dev/null
+nohup $(sleep 1; mosquitto_pub $PARAMS -m $TS &>/dev/null) </dev/null &>/dev/null & 
+RESULT=$(mosquitto_sub -N -C 1 -W 5 $PARAMS 2>&1)
+
+if [ $? -ne 0 ]; then
+  echo "Critical: $RESULT"  
+  exit 2
+elif [ $TS -ne $RESULT ]; then
+  echo "Critical: wrong payload received"
+  exit 2 
+else 
+  echo "Ok: message received"
+  exit 0
+fi
