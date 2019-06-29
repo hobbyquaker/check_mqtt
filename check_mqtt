@@ -5,7 +5,7 @@
 
 PARAMS=$*
 
-TS=`date +%s`
+TS=$(date +%s)
 
 mosquitto_pub $PARAMS -m '' &>/dev/null
 nohup $(sleep 1; mosquitto_pub $PARAMS -m $TS &>/dev/null) </dev/null &>/dev/null & 
